@@ -1,0 +1,20 @@
+# Packages imported by the notebooks
+pandas
+numpy
+scikit-learn
+xgboost
+lightgbm
+matplotlib
+seaborn
+scipy
+polars
+
+# Extra packages needed by the Kaggle-provided kaggle_evaluation/ package
+# (only used by notebooks/model_Josselin.ipynb)
+grpcio
+protobuf
+pyarrow
+
+# To run the notebooks and download the data
+jupyter
+kaggle
