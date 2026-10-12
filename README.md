@@ -6,7 +6,6 @@ Notebooks from our entry to the Kaggle competition *MITSUI & CO. Commodity Predi
 
 - **Problem:** given daily prices from several markets (London Metal Exchange, Japan Exchange, US stocks and ETFs, foreign exchange), predict 424 "targets": price movements of single instruments or of the difference between two instruments, 1 to 4 days ahead.
 - **What we did:** data exploration, first single-target baselines, then two multi-target XGBoost pipelines: one with a separate model per prediction horizon, one with richer feature engineering, plugged into Kaggle's submission API.
-- **Main result:** the experiments run end to end and are evaluated on internal validation splits only (see [Results](#results)). No Kaggle leaderboard score is recorded in this repository.
 - **Tech:** Python, pandas, scikit-learn, XGBoost, LightGBM, Jupyter.
 
 ## Context
@@ -35,33 +34,6 @@ The work is split across four notebooks, which are mostly independent experiment
    - Model: one XGBoost per target (`MultiOutputRegressor`). It is validated on the last 200 days with the rank-correlation Sharpe metric, then retrained on all the data.
    - Submission: the notebook wraps the model in a `predict` function and serves it through Kaggle's inference server. It was written to run on Google Colab.
 
-## Results
-
-All numbers below come from outputs saved inside the notebooks. They are **internal validation scores**, not Kaggle leaderboard scores.
-
-| Notebook | Setup | Metric | Value |
-|---|---|---|---|
-| `XGBoost.ipynb` | lag-1 model, 106 targets | mean MSE | 0.000277 |
-| `XGBoost.ipynb` | lag-2 model, 106 targets | mean MSE | 0.000504 |
-| `XGBoost.ipynb` | lag-3 model, 106 targets | mean MSE | 0.000841 |
-| `XGBoost.ipynb` | lag-4 model, 106 targets | mean MSE | 0.001435 |
-| `XGBoost.ipynb` | average over the 4 lag groups | mean MSE | 0.000764 |
-| `data_treatment.ipynb` | XGBoost, `target_0` only | MSE | 0.0001 (printed with 4 decimals only) |
-| `LightGBM.ipynb` | LightGBM + Random Forest, `target_0` | MSE | no result: the saved run stopped with an error (see below) |
-| `model_Josselin.ipynb` | XGBoost, 1,048 features | rank-correlation Sharpe | not recorded: the saved output stops during validation training |
-
-![MSE distribution per lag group](figures/xgboost_mse_by_lag.png)
-
-*Distribution of the test MSE over the 106 targets of each lag group. The figure was taken from the output of `notebooks/XGBoost.ipynb`. Longer horizons give larger errors.*
-
-**Limitations (please read):**
-
-- **MSE is not the competition metric.** A low MSE mostly reflects that daily price changes are small numbers. It says little about whether the model ranks the targets correctly each day, which is what the competition scores.
-- **Very little data in `XGBoost.ipynb`.** After creating lag features, the notebook drops every row with at least one missing value. Only **100 of the 1,917 days remain** (printed in the notebook), so each model is trained on 80 days and tested on 20 days with up to 3,924 features. The scores are therefore very noisy.
-- **Possible look-ahead leakage.** `XGBoost.ipynb` uses past values of the targets as features. On Kaggle, a target only becomes known several days later (this is why the API provides `lagged_test_labels`), so this should be checked. In the test-time function `predict_all_targets` these target features are simply set to 0.
-- **`model_Josselin.ipynb` builds features for one day at a time.** At submission time, `predict` calls `create_features` on a single day of test data. Lag and rolling features therefore cannot use earlier days and fall back to fill values.
-- **`LightGBM.ipynb` does not run with recent LightGBM.** It passes `early_stopping_rounds` to `lgb.train`, which LightGBM 4.x no longer accepts. The saved output shows this `TypeError`.
-- The baselines in `data_treatment.ipynb` and `LightGBM.ipynb` use a **random** train/test split on time-series data, which tends to give optimistic scores.
 
 ## Repository structure
 
