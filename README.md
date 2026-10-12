@@ -103,7 +103,7 @@ MITSUI-CO_Kaggle/
    cd notebooks
    jupyter notebook
    ```
-4. Suggested order. The notebooks do not depend on each other's outputs and write no files.
+4. Suggested order. The notebooks do not depend on each other's outputs. None of them saves files explicitly; only Kaggle's local gateway in `model_Josselin.ipynb` may write a submission file.
    1. `data_treatment.ipynb` shows the target pairs table, the `target_0` baseline MSE and a feature-importance plot.
    2. `LightGBM.ipynb` runs the LightGBM and Random Forest baselines. It needs `lightgbm<4` or a fix of the `early_stopping_rounds` argument.
    3. `XGBoost.ipynb` contains the exploration and the per-lag models, and prints the MSE tables and plots shown above.
