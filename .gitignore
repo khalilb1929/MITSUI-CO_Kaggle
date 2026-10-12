@@ -1,0 +1,28 @@
+# Competition data (download it from Kaggle, see README) - not redistributable
+data/
+*.csv
+*.parquet
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Saved models / checkpoints
+models/
+*.pkl
+*.joblib
+*.model
+
+# Environment / secrets
+.env
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
